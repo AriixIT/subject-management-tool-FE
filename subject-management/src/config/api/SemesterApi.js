@@ -1,9 +1,31 @@
+const url = "http://localhost:9090/semesters";
+
+
 const SemesterApi = {
     getSemesters: () => {
-        return fetch("http://localhost:9090/semesters")
+        return fetch(url)
     },
     getSemester: (id) => {
-        return fetch("http://localhost:9090/semesters/" + id)
+        return fetch(url + "/" + id)
+    },
+    addSemester: (semester) => {
+        return fetch(url, {
+            body: semester,
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        })
+    },
+    updateSemester: (id, semester) => {
+        return fetch(url + "/" + id, {
+            body: JSON.stringify(semester),
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        })
     }
 }
 

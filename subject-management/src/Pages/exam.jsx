@@ -2,11 +2,27 @@ import { React, useState, useEffect, Fragment } from "react";
 import ExamApi from "../config/api/ExamApi";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-
+import ExamForm from "../Components/forms/examForm";
+import { TextField as MuiTextField } from "@material-ui/core";
 const Exam = (props) => {
   const { match } = props;
   const id = match.params.id;
   const [exam, setExam] = useState({});
+
+  const updateExam = (values) => {
+    ExamApi.updateExam(id, {
+      id: id,
+      name: values.name,
+      mark: values.mark,
+      date: values.date,
+      subject: exam.subject,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setExam(data);
+      });
+  };
 
   useEffect(() => {
     ExamApi.getExam(id)
@@ -15,35 +31,26 @@ const Exam = (props) => {
         console.log(data);
         setExam(data);
       });
-  }, {});
+  }, []);
 
   return (
     <Fragment>
-      <Button
-        variant="contained"
-        color="primary"
-        style={{ float: "left", marginLeft: 450, marginTop: 40 }}
-        onClick={() => props.history.goBack()}
-      >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        style={{ float: "right", marginRight: 450, marginTop: 40 }}
-      >
-        Edit
-      </Button>
       <Grid
         container
-        spacing={0}
+        spacing={1}
         direction="column"
         alignItems="center"
         justify="center"
       >
-        <h1>{exam.name}</h1>
-        <h3>Mark: {exam.mark ? exam.mark : "-"}</h3>
-        <h3>Date: {exam.date ? exam.date : "-"}</h3>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginTop: 40 }}
+          onClick={() => props.history.goBack()}
+        >
+          Back
+        </Button>
+        <ExamForm data={exam} submit={updateExam} />
       </Grid>
     </Fragment>
   );

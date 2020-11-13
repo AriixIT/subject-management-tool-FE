@@ -10,8 +10,7 @@ import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import TextField from "../Components/TextField";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import BasicForm from "../Components/forms/basicForm";
 
 const useStyles = makeStyles({
   table: {
@@ -26,38 +25,37 @@ const Semester = (props) => {
   const id = match.params.id;
 
   const [semester, setSemester] = useState({});
-  const [editing, setEditing] = useState(false);
 
   const goToSubject = (subject) =>
     props.history.push(`/semesters/${id}/subjects/${subject.id}`);
 
-  useEffect(() => {
+  const updateSemester = (values) => {
+    console.log(values.name);
+    SemesterApi.updateSemester(id, {
+      id: id,
+      name: values.name,
+      subjects: semester.subjects,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setSemester(data);
+      });
+  };
+
+  const getSemester = () => {
     SemesterApi.getSemester(id)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setSemester(data);
       });
-  }, {});
+  };
+
+  useEffect(() => {
+    getSemester();
+  }, []);
 
   return (
     <Fragment>
-      <Button
-        variant="contained"
-        color="primary"
-        style={{ float: "left", marginLeft: 450, marginTop: 40 }}
-        onClick={() => props.history.goBack()}
-      >
-        Back
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        style={{ float: "right", marginRight: 450, marginTop: 40 }}
-        onClick={() => setEditing(true)}
-      >
-        Edit
-      </Button>
       <Grid
         container
         spacing={0}
@@ -65,30 +63,16 @@ const Semester = (props) => {
         alignItems="center"
         justify="center"
       >
-        {editing ? (
-          <Formik
-            initialValues={{ semesterName: semester.name }}
-            enableReinitialize={true}
-            onSubmit={(values, { setSubmitting }) => {
-              setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
-                setSubmitting(false);
-              }, 400);
-            }}
-          >
-            {() => (
-              <Form>
-                <TextField
-                  name="semesterName"
-                  size="medium"
-                  variant="outlined"
-                />
-              </Form>
-            )}
-          </Formik>
-        ) : (
-          <h1>{semester.name}</h1>
-        )}
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginTop: 40 }}
+          onClick={() => props.history.goBack()}
+        >
+          Back
+        </Button>
+
+        <BasicForm data={semester} submit={updateSemester} />
 
         <h3>Subjects:</h3>
 
