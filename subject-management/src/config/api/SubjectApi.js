@@ -9,7 +9,7 @@ const SubjectApi = {
     },
     addSubject: (subject) => {
         return fetch(url, {
-            body: subject,
+            body: JSON.stringify(subject),
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -24,6 +24,11 @@ const SubjectApi = {
             headers: {
               'Content-Type': 'application/json'
             }
+        })
+    },
+    deleteSubject: (id) => {
+        return fetch(url + "/" + id, {
+            method: 'DELETE'
         })
     }
 }

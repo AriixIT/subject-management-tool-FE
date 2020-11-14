@@ -9,7 +9,7 @@ const ExamApi = {
     },
     addExam: (exam) => {
         return fetch(url, {
-            body: exam,
+            body: JSON.stringify(exam),
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -24,6 +24,12 @@ const ExamApi = {
             headers: {
               'Content-Type': 'application/json'
             }
+        })
+    },
+    deleteExam: (id) => {
+        console.log(id)
+        return fetch(url + "/" + id, {
+            method: 'DELETE'
         })
     }
 }

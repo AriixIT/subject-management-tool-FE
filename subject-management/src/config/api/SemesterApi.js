@@ -10,7 +10,7 @@ const SemesterApi = {
     },
     addSemester: (semester) => {
         return fetch(url, {
-            body: semester,
+            body: JSON.stringify(semester),
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -25,6 +25,11 @@ const SemesterApi = {
             headers: {
               'Content-Type': 'application/json'
             }
+        })
+    },
+    deleteSemester: (id) => {
+        return fetch(url + "/" + id, {
+            method: 'DELETE'
         })
     }
 }

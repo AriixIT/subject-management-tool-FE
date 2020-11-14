@@ -7,7 +7,13 @@ import { TextField as MuiTextField } from "@material-ui/core";
 const Exam = (props) => {
   const { match } = props;
   const id = match.params.id;
+  const subejctId = match.params.subjectId;
+  const semesterId = match.params.semesterid;
   const [exam, setExam] = useState({});
+
+  const goToSubject = () => {
+    props.history.push(`/semesters/${semesterId}/subjects/${subejctId}`);
+  };
 
   const updateExam = (values) => {
     ExamApi.updateExam(id, {
@@ -19,7 +25,6 @@ const Exam = (props) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setExam(data);
       });
   };
@@ -28,7 +33,6 @@ const Exam = (props) => {
     ExamApi.getExam(id)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setExam(data);
       });
   }, []);
@@ -46,7 +50,7 @@ const Exam = (props) => {
           variant="contained"
           color="primary"
           style={{ marginTop: 40 }}
-          onClick={() => props.history.goBack()}
+          onClick={() => goToSubject()}
         >
           Back
         </Button>

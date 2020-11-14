@@ -10,6 +10,8 @@ import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 
 const useStyles = makeStyles({
   table: {
@@ -22,16 +24,25 @@ const Index = (props) => {
 
   const [semesters, setSemesters] = useState([]);
 
+  const goToCreate = (subject) => props.history.push(`/semesters/create`);
+
   const goToSemester = (semester) =>
     props.history.push(`/semesters/${semester.id}`);
 
-  useEffect(() => {
+  const deleteSemester = (id) => {
+    SemesterApi.deleteSemester(id).then(getSemesters);
+  };
+
+  const getSemesters = () => {
     SemesterApi.getSemesters()
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setSemesters(data);
       });
+  };
+
+  useEffect(() => {
+    getSemesters();
   }, []);
 
   return (
@@ -43,7 +54,12 @@ const Index = (props) => {
       justify="center"
     >
       <h1>Semesters</h1>
-      <Button variant="contained" color="primary" style={{ marginBottom: 10 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ marginBottom: 10 }}
+        onClick={() => goToCreate()}
+      >
         Add Semester
       </Button>
       <TableContainer className={classes.table} component={Paper}>
@@ -51,18 +67,24 @@ const Index = (props) => {
           <TableHead style={{ backgroundColor: "lightgrey" }}>
             <TableRow>
               <TableCell>Name</TableCell>
+              <TableCell align="right" />
             </TableRow>
           </TableHead>
           <TableBody>
             {semesters.map((row) => (
-              <TableRow
-                hover
-                key={row.id}
-                onClick={() => {
-                  goToSemester(row);
-                }}
-              >
-                <TableCell>{row.name}</TableCell>
+              <TableRow hover key={row.id}>
+                <TableCell
+                  onClick={() => {
+                    goToSemester(row);
+                  }}
+                >
+                  {row.name}
+                </TableCell>
+                <TableCell align="right">
+                  <IconButton onClick={() => deleteSemester(row.id)}>
+                    <HighlightOffIcon />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

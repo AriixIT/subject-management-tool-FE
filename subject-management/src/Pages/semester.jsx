@@ -1,5 +1,6 @@
 import { React, useState, useEffect, Fragment } from "react";
 import SemesterApi from "../config/api/SemesterApi";
+import SubjectApi from "../config/api/SubjectApi";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -11,6 +12,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import BasicForm from "../Components/forms/basicForm";
+import IconButton from "@material-ui/core/IconButton";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 
 const useStyles = makeStyles({
   table: {
@@ -26,11 +29,22 @@ const Semester = (props) => {
 
   const [semester, setSemester] = useState({});
 
+  const goToCreate = () =>
+    props.history.push({
+      pathname: "/subjects/create",
+      state: { semester: semester },
+    });
+
+  const goToIndex = () => props.history.push(`/semesters`);
+
   const goToSubject = (subject) =>
     props.history.push(`/semesters/${id}/subjects/${subject.id}`);
 
+  const deleteSubject = (id) => {
+    SubjectApi.deleteSubject(id).then(getSemester);
+  };
+
   const updateSemester = (values) => {
-    console.log(values.name);
     SemesterApi.updateSemester(id, {
       id: id,
       name: values.name,
@@ -67,7 +81,7 @@ const Semester = (props) => {
           variant="contained"
           color="primary"
           style={{ marginTop: 40 }}
-          onClick={() => props.history.goBack()}
+          onClick={() => goToIndex()}
         >
           Back
         </Button>
@@ -83,26 +97,43 @@ const Semester = (props) => {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Average</TableCell>
+                  <TableCell align="right" />
                 </TableRow>
               </TableHead>
               <TableBody>
                 {semester.subjects.map((row) => (
-                  <TableRow
-                    hover
-                    key={row.id}
-                    onClick={() => {
-                      goToSubject(row);
-                    }}
-                  >
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell>{row.average}</TableCell>
+                  <TableRow hover key={row.id}>
+                    <TableCell
+                      onClick={(e) => {
+                        goToSubject(row);
+                      }}
+                    >
+                      {row.name}
+                    </TableCell>
+                    <TableCell
+                      onClick={(e) => {
+                        goToSubject(row);
+                      }}
+                    >
+                      {row.average}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton onClick={() => deleteSubject(row.id)}>
+                        <HighlightOffIcon />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
         ) : null}
-        <Button variant="contained" color="primary" style={{ marginTop: 10 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginTop: 10 }}
+          onClick={() => goToCreate()}
+        >
           Add Subject
         </Button>
       </Grid>
